@@ -1,0 +1,12 @@
+{
+  "project_name": "loom",
+  "provider": "claude",
+  "mode": "docker",
+  "model": "sonnet",
+  "key_source": "env",
+  "notify": {
+    "provider": null,
+    "telegram_token": null,
+    "telegram_chat_id": null
+  }
+}

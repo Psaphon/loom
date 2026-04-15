@@ -1,0 +1,29 @@
+services:
+  claude-code:
+    build: ./claude-code
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ../:/workspace
+      - claude-data:/home/claude
+      - ./claude-code/settings.json:/home/claude/.claude/settings.json:ro
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    environment:
+      - GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-Developer}
+      - GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-dev@localhost}
+      - GIT_COMMITTER_NAME=${GIT_AUTHOR_NAME:-Developer}
+      - GIT_COMMITTER_EMAIL=${GIT_AUTHOR_EMAIL:-dev@localhost}
+      - CLAUDE_MODEL=claude-sonnet-4-20250514
+
+volumes:
+  claude-data:
