@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Virtual envs
+.venv/
+venv/
+
+# Renders and state (loom-specific)
+output/
+*.structure.json.bak
+
+# Env and secrets
+.env
+.env.local
+
+# Editor/OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
