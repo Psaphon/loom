@@ -25,7 +25,7 @@ Loom is an overnight media pipeline that renders music videos from a directory o
 
 **Branch:** `feature/project-scaffold`
 **Depends on:** none
-**Status:** Not Started
+**Status:** Complete
 **Requires:** ai
 
 ### Goal
