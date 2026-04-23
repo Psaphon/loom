@@ -61,21 +61,27 @@ def run(config_path: Path, dry_run: bool) -> None:
 
 @cli.command()
 @click.option(
-    "--config",
-    "config_path",
+    "--song",
+    "song_path",
     required=True,
-    type=click.Path(path_type=Path),
-    help="Path to project TOML config file.",
+    type=click.Path(path_type=Path, exists=True, dir_okay=False),
+    help="Path to audio file (MP3, WAV, M4A).",
 )
-def analyze(config_path: Path) -> None:
-    """Analyze song structure and write structure JSON."""
+@click.option("--force", is_flag=True, default=False, help="Re-analyze even if cached JSON exists.")
+def analyze(song_path: Path, force: bool) -> None:
+    """Analyze song structure and write structure JSON beside the source file."""
+    from loom.analysis import analyze_song  # noqa: PLC0415
+
     try:
-        cfg = load_config(config_path)
-    except ConfigError as exc:
-        logger.error("Config error: %s", exc)
+        out = analyze_song(song_path, force=force)
+    except ValueError as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
+    except Exception as exc:
+        logger.error("Analysis failed: %s", exc)
         sys.exit(1)
 
-    logger.info("analyze: song=%s (not yet implemented)", cfg.paths.song)
+    logger.info("Structure written: %s", out)
 
 
 @cli.command()
