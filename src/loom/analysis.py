@@ -96,7 +96,4 @@ def _detect_sections(y, sr: int, duration: float) -> list[dict]:
     if not non_empty:
         non_empty = [(0.0, round(duration, 3))]
 
-    return [
-        {"start": s, "end": e, "label": f"section_{i}"}
-        for i, (s, e) in enumerate(non_empty)
-    ]
+    return [{"start": s, "end": e, "label": f"section_{i}"} for i, (s, e) in enumerate(non_empty)]
