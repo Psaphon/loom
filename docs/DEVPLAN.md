@@ -115,7 +115,7 @@ librosa first-import is slow (numba warmup). Acceptable — runs once per song, 
 
 **Branch:** `feature/comfyui-client`
 **Depends on:** project-scaffold
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
