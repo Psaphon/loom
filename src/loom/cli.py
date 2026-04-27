@@ -86,21 +86,65 @@ def analyze(song_path: Path, force: bool) -> None:
 
 @cli.command()
 @click.option(
-    "--config",
-    "config_path",
+    "--input",
+    "input_path",
+    required=True,
+    type=click.Path(path_type=Path, exists=True, dir_okay=False),
+    help="Input overlay video file.",
+)
+@click.option(
+    "--style",
+    required=True,
+    type=click.Choice(["lineart", "canny", "depth", "hed"]),
+    help="Preprocessing style.",
+)
+@click.option(
+    "--output",
+    "output_path",
     required=True,
     type=click.Path(path_type=Path),
-    help="Path to project TOML config file.",
+    help="Output preprocessed video file.",
 )
-def preprocess(config_path: Path) -> None:
-    """Run ComfyUI preprocessing (lineart, canny, depth, hed) on overlays."""
+@click.option(
+    "--comfy-url",
+    default="http://127.0.0.1:8188",
+    show_default=True,
+    envvar="COMFY_URL",
+    help="ComfyUI base URL.",
+)
+@click.option(
+    "--batch-size",
+    default=16,
+    show_default=True,
+    help="Number of frames to submit to ComfyUI concurrently.",
+)
+def preprocess(
+    input_path: Path,
+    style: str,
+    output_path: Path,
+    comfy_url: str,
+    batch_size: int,
+) -> None:
+    """Preprocess an overlay video via ComfyUI (lineart, canny, depth, hed)."""
+    import asyncio  # noqa: PLC0415
+
+    from loom.preprocess import PreprocessError, preprocess_overlay  # noqa: PLC0415
+
     try:
-        cfg = load_config(config_path)
-    except ConfigError as exc:
-        logger.error("Config error: %s", exc)
+        asyncio.run(
+            preprocess_overlay(
+                input_path,
+                output_path,
+                style,
+                comfy_url=comfy_url,
+                batch_size=batch_size,
+            )
+        )
+    except (ValueError, PreprocessError) as exc:
+        logger.error("Preprocessing failed: %s", exc)
         sys.exit(1)
 
-    logger.info("preprocess: %d overlay(s) (not yet implemented)", len(cfg.paths.overlays))
+    logger.info("Done: %s", output_path)
 
 
 @cli.command()

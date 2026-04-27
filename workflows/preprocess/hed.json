@@ -1,0 +1,24 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    }
+  },
+  "2": {
+    "class_type": "HEDPreprocessor",
+    "inputs": {
+      "image": ["1", 0],
+      "safe": "enable",
+      "resolution": 512
+    }
+  },
+  "3": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["2", 0],
+      "filename_prefix": "loom_hed"
+    }
+  }
+}
