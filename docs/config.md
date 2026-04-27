@@ -81,6 +81,7 @@ All paths may be relative (resolved from the working directory at runtime) or ab
 | `height`           | int     | `512`   | Diffusion/preprocess render height (px).               |
 | `fps`              | int     | `24`    | Output frame rate.                                     |
 | `enable_diffusion` | bool    | `false` | Run AnimateDiff + ControlNet stylization stage.        |
+| `overlay_loop`     | bool    | `true`  | When an overlay clip is shorter than the base, loop it from start. Set `false` to hold the last frame instead. |
 
 ---
 
