@@ -245,6 +245,46 @@ class LoomComfyClient:
         )
         return downloaded
 
+    async def upload_image(self, path: Path) -> str:
+        """Upload a local image file to ComfyUI's input directory.
+
+        Parameters
+        ----------
+        path:
+            Local image file to upload (typically a PNG frame).
+
+        Returns
+        -------
+        str
+            The filename as assigned by ComfyUI (use this in workflow inputs).
+
+        Raises
+        ------
+        ComfyError
+            If ComfyUI is unreachable or returns a non-200 response.
+        """
+        image_bytes = path.read_bytes()
+        logger.debug("Uploading image filename=%s", path.name)
+        try:
+            resp = await self._http.post(
+                "/upload/image",
+                files={"image": (path.name, image_bytes, "image/png")},
+                data={"type": "input", "overwrite": "true"},
+            )
+        except httpx.ConnectError as exc:
+            raise ComfyError(
+                f"Cannot reach ComfyUI at {self.base_url} — is it running? ({exc})"
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise ComfyError(f"HTTP error uploading image {path.name}: {exc}") from exc
+
+        if resp.status_code != 200:
+            raise ComfyError(f"ComfyUI upload failed (HTTP {resp.status_code}): {resp.text[:200]}")
+
+        filename: str = resp.json()["name"]
+        logger.debug("Uploaded %s -> %s", path.name, filename)
+        return filename
+
     async def aclose(self) -> None:
         """Close the underlying HTTP client."""
         await self._http.aclose()

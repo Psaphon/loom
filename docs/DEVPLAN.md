@@ -157,7 +157,7 @@ ComfyUI API endpoints: POST /prompt, GET /history/{id}, GET /view. Docs at https
 
 **Branch:** `feature/overlay-preprocess`
 **Depends on:** comfyui-client
-**Status:** Not Started
+**Status:** PR Open
 **Requires:** ai
 
 ### Goal
