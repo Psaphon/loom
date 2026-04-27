@@ -204,7 +204,7 @@ Workflow JSONs are creative recipes. Expect iteration as user sees output.
 
 **Branch:** `feature/composite`
 **Depends on:** song-analysis, overlay-preprocess
-**Status:** Not Started
+**Status:** In Progress
 **Requires:** ai
 
 ### Goal

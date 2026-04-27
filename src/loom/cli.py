@@ -157,13 +157,21 @@ def preprocess(
 )
 def composite(config_path: Path) -> None:
     """Composite base footage and overlays with ffmpeg."""
+    from loom.composite import CompositeError, run_composite  # noqa: PLC0415
+
     try:
         cfg = load_config(config_path)
     except ConfigError as exc:
         logger.error("Config error: %s", exc)
         sys.exit(1)
 
-    logger.info("composite: output=%s (not yet implemented)", cfg.paths.output)
+    try:
+        out = run_composite(cfg)
+    except CompositeError as exc:
+        logger.error("Composite failed: %s", exc)
+        sys.exit(1)
+
+    logger.info("Done: %s", out)
 
 
 @cli.command()

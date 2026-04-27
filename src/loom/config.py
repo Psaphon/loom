@@ -41,6 +41,7 @@ class RenderConfig:
     height: int = 512
     fps: int = 24
     enable_diffusion: bool = False
+    overlay_loop: bool = True
 
 
 @dataclass
@@ -111,6 +112,12 @@ def _parse_render(raw: dict) -> RenderConfig:
         if not isinstance(v, bool):
             raise ConfigError(f"[{ctx}] 'enable_diffusion' must be a boolean")
         cfg.enable_diffusion = v
+
+    if "overlay_loop" in raw:
+        v = raw["overlay_loop"]
+        if not isinstance(v, bool):
+            raise ConfigError(f"[{ctx}] 'overlay_loop' must be a boolean")
+        cfg.overlay_loop = v
 
     return cfg
 

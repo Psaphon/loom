@@ -25,6 +25,32 @@ def _run(cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
     return result
 
 
+def get_video_duration(video: Path) -> float:
+    """Return the duration in seconds of *video* using ffprobe.
+
+    Raises
+    ------
+    VideoIOError
+        If ffprobe fails or no duration is found.
+    """
+    result = _run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "csv=p=0",
+            str(video),
+        ]
+    )
+    raw = result.stdout.decode().strip()
+    if not raw:
+        raise VideoIOError(f"ffprobe returned no duration for {video}")
+    return float(raw)
+
+
 def get_video_fps(video: Path) -> float:
     """Return the frame rate of *video* using ffprobe.
 
