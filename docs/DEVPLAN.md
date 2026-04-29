@@ -248,7 +248,7 @@ ffmpeg blend filter docs worth referencing. Some modes produce unintuitive resul
 
 **Branch:** `feature/diffusion-stylize`
 **Depends on:** comfyui-client
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
