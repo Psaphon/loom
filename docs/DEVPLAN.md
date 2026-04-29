@@ -293,7 +293,7 @@ This is the feature most likely to fail on 6GB. Acceptance criteria explicitly r
 
 **Branch:** `feature/upscale`
 **Depends on:** comfyui-client
-**Status:** Not Started
+**Status:** In Progress
 **Requires:** ai
 
 ### Goal
