@@ -276,6 +276,65 @@ def stylize(
     logger.info("Done: %s", output_path)
 
 
+@cli.command()
+@click.option(
+    "--input",
+    "input_path",
+    required=True,
+    type=click.Path(path_type=Path, exists=True, dir_okay=False),
+    help="Input low-resolution video file.",
+)
+@click.option(
+    "--output",
+    "output_path",
+    required=True,
+    type=click.Path(path_type=Path),
+    help="Output upscaled video file.",
+)
+@click.option(
+    "--target",
+    default="1080p",
+    show_default=True,
+    type=click.Choice(["1080p", "4k"]),
+    help="Target output resolution.",
+)
+@click.option(
+    "--comfy-url",
+    default="http://127.0.0.1:8188",
+    show_default=True,
+    envvar="COMFY_URL",
+    help="ComfyUI base URL.",
+)
+def upscale(
+    input_path: Path,
+    output_path: Path,
+    target: str,
+    comfy_url: str,
+) -> None:
+    """Upscale a low-resolution video to 1080p or 4K via Real-ESRGAN in ComfyUI."""
+    import asyncio  # noqa: PLC0415
+
+    from loom.upscale import OOMError, UpscaleError, upscale_video  # noqa: PLC0415
+
+    try:
+        asyncio.run(
+            upscale_video(
+                input_path,
+                output_path,
+                target,
+                comfy_url=comfy_url,
+            )
+        )
+    except OOMError as exc:
+        logger.error("GPU out of memory: %s", exc)
+        sys.exit(1)
+    except (UpscaleError, ValueError) as exc:
+        logger.error("Upscale failed: %s", exc)
+        sys.exit(1)
+
+    logger.info("Done: %s", output_path)
+
+
 @cli.command("install-systemd")
 @click.option(
     "--config",
