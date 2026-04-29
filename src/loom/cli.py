@@ -176,25 +176,104 @@ def composite(config_path: Path) -> None:
 
 @cli.command()
 @click.option(
-    "--config",
-    "config_path",
+    "--input",
+    "input_path",
+    required=True,
+    type=click.Path(path_type=Path, exists=True, dir_okay=False),
+    help="Input base footage video file.",
+)
+@click.option(
+    "--prompt",
+    required=True,
+    help='Positive text prompt describing the desired style (e.g. "watercolor painting").',
+)
+@click.option(
+    "--output",
+    "output_path",
     required=True,
     type=click.Path(path_type=Path),
-    help="Path to project TOML config file.",
+    help="Output stylized video file.",
 )
-def stylize(config_path: Path) -> None:
-    """Run AnimateDiff + ControlNet stylization via ComfyUI (optional)."""
+@click.option(
+    "--negative-prompt",
+    default=None,
+    show_default=False,
+    help="Negative text prompt. Defaults to a generic quality filter.",
+)
+@click.option(
+    "--comfy-url",
+    default="http://127.0.0.1:8188",
+    show_default=True,
+    envvar="COMFY_URL",
+    help="ComfyUI base URL.",
+)
+@click.option(
+    "--context-length",
+    default=16,
+    show_default=True,
+    help="Frames per AnimateDiff context window. Reduce to 8 if OOM.",
+)
+@click.option(
+    "--width",
+    default=512,
+    show_default=True,
+    help="Output width in pixels. Keep at 512 for 6 GB VRAM.",
+)
+@click.option(
+    "--height",
+    default=512,
+    show_default=True,
+    help="Output height in pixels. Keep at 512 for 6 GB VRAM.",
+)
+@click.option("--steps", default=20, show_default=True, help="KSampler denoising steps.")
+@click.option("--cfg", default=7.0, show_default=True, help="Classifier-free guidance scale.")
+@click.option("--seed", default=42, show_default=True, help="RNG seed.")
+def stylize(
+    input_path: Path,
+    prompt: str,
+    output_path: Path,
+    negative_prompt: str | None,
+    comfy_url: str,
+    context_length: int,
+    width: int,
+    height: int,
+    steps: int,
+    cfg: float,
+    seed: int,
+) -> None:
+    """Stylize base footage with AnimateDiff + ControlNet via ComfyUI."""
+    import asyncio  # noqa: PLC0415
+
+    from loom.stylize import OOMError, StylizeError, stylize_video  # noqa: PLC0415
+
+    kwargs: dict = {}
+    if negative_prompt is not None:
+        kwargs["negative_prompt"] = negative_prompt
+
     try:
-        cfg = load_config(config_path)
-    except ConfigError as exc:
-        logger.error("Config error: %s", exc)
+        asyncio.run(
+            stylize_video(
+                input_path,
+                output_path,
+                prompt,
+                comfy_url=comfy_url,
+                context_length=context_length,
+                width=width,
+                height=height,
+                steps=steps,
+                cfg=cfg,
+                seed=seed,
+                **kwargs,
+            )
+        )
+    except OOMError as exc:
+        logger.error("GPU out of memory: %s", exc)
+        sys.exit(1)
+    except (StylizeError, ValueError) as exc:
+        logger.error("Stylization failed: %s", exc)
         sys.exit(1)
 
-    if not cfg.render.enable_diffusion:
-        logger.info("stylize: enable_diffusion=false, skipping.")
-        return
-
-    logger.info("stylize: not yet implemented")
+    logger.info("Done: %s", output_path)
 
 
 @cli.command("install-systemd")
