@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -42,8 +43,30 @@ def version() -> None:
     help="Path to project TOML config file.",
 )
 @click.option("--dry-run", is_flag=True, default=False, help="Validate config only, no rendering.")
-def run(config_path: Path, dry_run: bool) -> None:
-    """Run the full render pipeline."""
+@click.option(
+    "--force", is_flag=True, default=False, help="Re-run all stages, ignoring saved state."
+)
+@click.option(
+    "--deadline",
+    default=None,
+    envvar="LOOM_DEADLINE",
+    help="Stop cleanly at HH:MM (overrides config and LOOM_DEADLINE env var).",
+)
+@click.option(
+    "--comfy-url",
+    default="http://127.0.0.1:8188",
+    show_default=True,
+    envvar="COMFY_URL",
+    help="ComfyUI base URL.",
+)
+def run(
+    config_path: Path,
+    dry_run: bool,
+    force: bool,
+    deadline: str | None,
+    comfy_url: str,
+) -> None:
+    """Run the full render pipeline (analyze → stylize → preprocess → composite → upscale → mux)."""
     try:
         cfg = load_config(config_path)
     except ConfigError as exc:
@@ -52,11 +75,41 @@ def run(config_path: Path, dry_run: bool) -> None:
 
     logger.info("Loaded config: project=%r deadline=%s", cfg.name, cfg.schedule.deadline)
 
+    if deadline is not None:
+        # CLI/env deadline overrides config; expose via env so pipeline reads it
+        os.environ["LOOM_DEADLINE"] = deadline
+
     if dry_run:
         logger.info("Dry run — pipeline not started.")
         return
 
-    logger.info("Pipeline not yet implemented.")
+    # Add a file handler so progress is also written to output/loom.log
+    cfg.paths.output.mkdir(parents=True, exist_ok=True)
+    log_file = cfg.paths.output / "loom.log"
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s", datefmt="%H:%M:%S")
+    )
+    logging.getLogger().addHandler(file_handler)
+
+    from loom.pipeline import DeadlineReached, PipelineError, run_pipeline  # noqa: PLC0415
+
+    try:
+        final = run_pipeline(cfg, force=force, comfy_url=comfy_url)
+    except DeadlineReached as exc:
+        logger.warning("Deadline reached: %s", exc)
+        sys.exit(2)
+    except PipelineError as exc:
+        logger.error("Pipeline failed: %s", exc)
+        sys.exit(1)
+    except Exception as exc:
+        logger.error("Unexpected error: %s", exc)
+        sys.exit(1)
+    finally:
+        logging.getLogger().removeHandler(file_handler)
+        file_handler.close()
+
+    logger.info("Done: %s", final)
 
 
 @cli.command()

@@ -329,7 +329,7 @@ Upscale 512px renders to 1080p via Real-ESRGAN in ComfyUI. Runs after compositin
 
 **Branch:** `feature/pipeline-runner`
 **Depends on:** composite, diffusion-stylize, upscale
-**Status:** Not Started
+**Status:** PR Open
 **Requires:** ai
 
 ### Goal
