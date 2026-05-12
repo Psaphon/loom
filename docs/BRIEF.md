@@ -12,7 +12,7 @@ Consumer AI music-video tools either generate from scratch (Neural Frames, BeatV
 
 ## Target User
 
-the user, personally. Not portfolio-facing (yet). Used from SSH on phone to queue jobs, review output locally.
+Self-hosted single-user tool. Operated from SSH (often phone via Tailscale) to queue jobs; output reviewed locally.
 
 ## Stack Preferences
 
@@ -76,7 +76,7 @@ None of these solve loom's specific problem — song-structure-aware overlay com
 
 ## Audience and Tone
 
-- Target reader: the user
+- Target reader: a self-hosted operator running loom on their own GPU
 - Tone: technical, terse, assumes familiarity with ComfyUI and ~/Projects conventions
 - Pairs with: morning-brief (shares GPU, coordinates schedule), devtools (scaffolds and schedules loom), usb-autoinstall (may eventually install ComfyUI)
 
