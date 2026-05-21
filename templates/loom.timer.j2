@@ -1,0 +1,10 @@
+[Unit]
+Description=Loom nightly render timer — {{ project_name }}
+
+[Timer]
+OnCalendar=*-*-* 00:00:00
+AccuracySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
