@@ -375,7 +375,7 @@ Resumability matters: a 4-hour window may not fit a full render. Three nights to
 
 **Branch:** `feature/systemd-integration`
 **Depends on:** pipeline-runner
-**Status:** Not Started
+**Status:** In Progress
 **Requires:** both
 
 ### Goal

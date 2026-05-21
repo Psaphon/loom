@@ -390,18 +390,47 @@ def upscale(
 
 @cli.command("install-systemd")
 @click.option(
-    "--config",
-    "config_path",
+    "--project-dir",
+    "project_dir",
     required=True,
-    type=click.Path(path_type=Path),
-    help="Path to project TOML config file.",
+    type=click.Path(path_type=Path, exists=True, file_okay=False),
+    help="Path to loom project directory (must contain loom.toml).",
 )
-def install_systemd(config_path: Path) -> None:
-    """Install systemd user service and timer units."""
+@click.option(
+    "--output-dir",
+    "output_dir",
+    default=None,
+    type=click.Path(path_type=Path),
+    help="Directory to write unit files (default: project-dir).",
+)
+def install_systemd(project_dir: Path, output_dir: Path | None) -> None:
+    """Generate systemd user service and timer unit files for manual installation."""
+    config_path = project_dir / "loom.toml"
     try:
-        load_config(config_path)
+        cfg = load_config(config_path)
     except ConfigError as exc:
         logger.error("Config error: %s", exc)
         sys.exit(1)
 
-    logger.info("install-systemd: not yet implemented")
+    from loom.systemd import generate_units  # noqa: PLC0415
+
+    out = output_dir if output_dir is not None else project_dir
+    try:
+        service_path, timer_path = generate_units(
+            cfg, project_dir=project_dir.resolve(), output_dir=out
+        )
+    except Exception as exc:
+        logger.error("Failed to generate unit files: %s", exc)
+        sys.exit(1)
+
+    click.echo("\nGenerated unit files:")
+    click.echo(f"  {service_path}")
+    click.echo(f"  {timer_path}")
+    click.echo("\nTo install:")
+    click.echo("  mkdir -p ~/.config/systemd/user/")
+    click.echo(f"  cp {service_path} {timer_path} ~/.config/systemd/user/")
+    click.echo("  systemctl --user daemon-reload")
+    click.echo("  systemctl --user enable --now loom.timer")
+    click.echo("\nVerify:")
+    click.echo("  systemctl --user status loom.timer")
+    click.echo("  systemctl --user list-timers loom.timer")

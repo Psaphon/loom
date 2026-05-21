@@ -1,0 +1,17 @@
+[Unit]
+Description=Loom overnight music-video renderer — {{ project_name }}
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStartPre=-/usr/bin/systemctl --user stop ollama.service
+ExecStart={{ loom_bin }} run --config {{ config_path }}
+ExecStopPost=-/usr/bin/systemctl --user start ollama.service
+StandardOutput=append:{{ log_path }}
+StandardError=append:{{ log_path }}
+Environment=LOOM_DEADLINE={{ deadline }}
+TimeoutStopSec=60
+KillMode=process
+
+[Install]
+WantedBy=default.target
