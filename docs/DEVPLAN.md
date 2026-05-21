@@ -420,7 +420,7 @@ Morning-brief's 04:15 → 05:30 move is a `Requires: both` task because it touch
 
 **Branch:** `feature/docs-and-readme`
 **Depends on:** systemd-integration
-**Status:** In Progress
+**Status:** PR Open
 **Requires:** ai
 
 ### Goal
