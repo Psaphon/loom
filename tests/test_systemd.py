@@ -197,3 +197,11 @@ def test_generate_units_deadline_override(tmp_path: Path):
     cfg = make_cfg(tmp_path, deadline="04:00")
     service_path, _ = generate_units(cfg, project_dir=tmp_path, output_dir=tmp_path)
     assert "04:00" in service_path.read_text()
+
+
+def test_generate_units_creates_log_output_dir(tmp_path: Path):
+    """The log's parent dir must exist after generate_units, or the service dies
+    with 209/STDOUT — systemd opens StandardOutput=append: before ExecStartPre."""
+    cfg = make_cfg(tmp_path)  # paths.output = "output/" (relative to project_dir)
+    generate_units(cfg, project_dir=tmp_path, output_dir=tmp_path / "units")
+    assert (tmp_path / "output").is_dir()

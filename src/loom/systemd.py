@@ -86,6 +86,11 @@ def generate_units(
         output_root = (project_dir / output_root).resolve()
     log_path = output_root / "loom.log"
 
+    # systemd opens StandardOutput=append: BEFORE running ExecStartPre, so the
+    # log's parent dir must already exist or the unit dies with 209/STDOUT (an
+    # ExecStartPre mkdir would be too late). Create it at install time.
+    output_root.mkdir(parents=True, exist_ok=True)
+
     service_text = render_service(
         project_name=cfg.name,
         loom_bin=loom_bin,
