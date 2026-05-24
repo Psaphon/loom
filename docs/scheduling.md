@@ -67,6 +67,25 @@ The service unit stops `ollama.service` before running (`ExecStartPre`) and
 restarts it on exit (`ExecStopPost`). Both directives use `-` (ignore failure)
 so the render proceeds even if Ollama is not running.
 
+`ollama.service` is a **system** unit, so this **user** service needs an explicit
+privilege grant to manage it. Install a polkit rule once (requires sudo):
+
+```bash
+sudo tee /etc/polkit-1/rules.d/50-loom-ollama.rules >/dev/null <<'EOF'
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        action.lookup("unit") == "ollama.service" &&
+        subject.user == "comp") {
+        return polkit.Result.YES;
+    }
+});
+EOF
+```
+
+Without this grant the `systemctl stop ollama.service` call fails (and is
+swallowed by the `-` prefix), leaving Ollama on the GPU. Do **not** use
+`systemctl --user` for `ollama.service` — the user manager has no such unit.
+
 ## Morning-brief coordination
 
 Morning-brief's timer must be moved from 04:15 to 05:30 so it does not start
