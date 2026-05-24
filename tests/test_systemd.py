@@ -109,6 +109,11 @@ def test_render_service_ollama_stop_start():
     assert "ollama.service" in text
     assert "ExecStartPre" in text
     assert "ExecStopPost" in text
+    # ollama.service is a system unit; a user service manages it via polkit,
+    # never with `systemctl --user` (which only sees the user manager and
+    # silently no-ops, leaving Ollama on the GPU).
+    assert "--user stop ollama" not in text
+    assert "--user start ollama" not in text
 
 
 def test_render_service_no_unfilled_placeholders():
