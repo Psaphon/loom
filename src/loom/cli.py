@@ -97,8 +97,13 @@ def run(
     try:
         final = run_pipeline(cfg, force=force, comfy_url=comfy_url)
     except DeadlineReached as exc:
-        logger.warning("Deadline reached: %s", exc)
-        sys.exit(2)
+        # A reached deadline is a clean, expected stop, not a failure: the
+        # pipeline saved resumable state and continues next night (three-night
+        # completion is acceptable). Exit 0 so systemd does not mark loom.service
+        # as failed for normal end-of-window behavior. The warning + state file
+        # carry the "incomplete, will resume" nuance for anyone reading the log.
+        logger.warning("Deadline reached (will resume next run): %s", exc)
+        sys.exit(0)
     except PipelineError as exc:
         logger.error("Pipeline failed: %s", exc)
         sys.exit(1)
