@@ -16,6 +16,7 @@ venv/
 # Renders and state (loom-specific)
 output/
 *.structure.json.bak
+loom.toml
 
 # Env and secrets
 .env
