@@ -19,8 +19,19 @@ jobs:
         with:
           python-version: "3.11"
 
+      # Ruff is PINNED deliberately. An unpinned install lets an upstream
+      # release change CI behaviour with no change on our side. On 2026-08-26
+      # ruff 0.16.4 did exactly that in sibling repos: it expanded the default
+      # rule set (devtools: 134 new errors) and changed formatter output
+      # (morning-brief: a red PR that touched no Python).
+      #
+      # This repo's explicit `select` in pyproject.toml already shields it from
+      # default-rule changes, but `ruff format` drifts independently of the
+      # lint rules, so the pin is still load-bearing.
+      #
+      # Verified green at this version. Bump deliberately, in its own PR.
       - name: Install ruff
-        run: pip install ruff
+        run: pip install ruff==0.16.4
 
       - name: Ruff check
         run: ruff check .
