@@ -1,6 +1,10 @@
 services:
   claude-code:
-    build: ./claude-code
+    build:
+      context: ./claude-code
+      args:
+        HOME_UID: "${UID:-1000}"
+        HOME_GID: "${GID:-1000}"
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ../:/workspace
