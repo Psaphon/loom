@@ -1,6 +1,10 @@
 services:
   claude-code:
-    build: ./claude-code
+    build:
+      context: ./claude-code
+      args:
+        HOME_UID: "${UID:-1000}"
+        HOME_GID: "${GID:-1000}"
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ../:/workspace
@@ -23,7 +27,7 @@ services:
       - GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-dev@localhost}
       - GIT_COMMITTER_NAME=${GIT_AUTHOR_NAME:-Developer}
       - GIT_COMMITTER_EMAIL=${GIT_AUTHOR_EMAIL:-dev@localhost}
-      - CLAUDE_MODEL=claude-sonnet-4-20250514
+      - ANTHROPIC_MODEL=sonnet
 
 volumes:
   claude-data:

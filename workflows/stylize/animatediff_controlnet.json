@@ -1,0 +1,96 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "loom_batch_input",
+      "upload": "image"
+    }
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "v1-5-pruned-emaonly.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "loom_positive_prompt",
+      "clip": ["2", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "loom_negative_prompt",
+      "clip": ["2", 1]
+    }
+  },
+  "5": {
+    "class_type": "LineArtPreprocessor",
+    "inputs": {
+      "image": ["1", 0],
+      "resolution": 512,
+      "coarse": "disable"
+    }
+  },
+  "6": {
+    "class_type": "ControlNetLoader",
+    "inputs": {
+      "control_net_name": "control_v11p_sd15_lineart.pth"
+    }
+  },
+  "7": {
+    "class_type": "ControlNetApply",
+    "inputs": {
+      "conditioning": ["3", 0],
+      "control_net": ["6", 0],
+      "image": ["5", 0],
+      "strength": 0.8
+    }
+  },
+  "8": {
+    "class_type": "ADE_AnimateDiffLoaderGen1",
+    "inputs": {
+      "model_name": "mm_sd_v15_v2.ckpt",
+      "beta_schedule": "sqrt_linear (AnimateDiff)",
+      "model": ["2", 0]
+    }
+  },
+  "9": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": ["1", 0],
+      "vae": ["2", 2]
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["8", 0],
+      "positive": ["7", 0],
+      "negative": ["4", 0],
+      "latent_image": ["9", 0],
+      "seed": 42,
+      "steps": 20,
+      "cfg": 7.0,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "karras",
+      "denoise": 0.75
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["10", 0],
+      "vae": ["2", 2]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["11", 0],
+      "filename_prefix": "loom_stylize"
+    }
+  }
+}

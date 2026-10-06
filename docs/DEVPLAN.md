@@ -25,7 +25,7 @@ Loom is an overnight media pipeline that renders music videos from a directory o
 
 **Branch:** `feature/project-scaffold`
 **Depends on:** none
-**Status:** Not Started
+**Status:** Complete
 **Requires:** ai
 
 ### Goal
@@ -70,7 +70,7 @@ Config must include: project name, paths (base footage, overlays, song, output),
 
 **Branch:** `feature/song-analysis`
 **Depends on:** project-scaffold
-**Status:** Not Started
+**Status:** Complete
 **Requires:** ai
 
 ### Goal
@@ -115,7 +115,7 @@ librosa first-import is slow (numba warmup). Acceptable — runs once per song, 
 
 **Branch:** `feature/comfyui-client`
 **Depends on:** project-scaffold
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
@@ -157,7 +157,7 @@ ComfyUI API endpoints: POST /prompt, GET /history/{id}, GET /view. Docs at https
 
 **Branch:** `feature/overlay-preprocess`
 **Depends on:** comfyui-client
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
@@ -204,7 +204,7 @@ Workflow JSONs are creative recipes. Expect iteration as user sees output.
 
 **Branch:** `feature/composite`
 **Depends on:** song-analysis, overlay-preprocess
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
@@ -248,7 +248,7 @@ ffmpeg blend filter docs worth referencing. Some modes produce unintuitive resul
 
 **Branch:** `feature/diffusion-stylize`
 **Depends on:** comfyui-client
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
@@ -293,7 +293,7 @@ This is the feature most likely to fail on 6GB. Acceptance criteria explicitly r
 
 **Branch:** `feature/upscale`
 **Depends on:** comfyui-client
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
@@ -329,7 +329,7 @@ Upscale 512px renders to 1080p via Real-ESRGAN in ComfyUI. Runs after compositin
 
 **Branch:** `feature/pipeline-runner`
 **Depends on:** composite, diffusion-stylize, upscale
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal
@@ -375,7 +375,7 @@ Resumability matters: a 4-hour window may not fit a full render. Three nights to
 
 **Branch:** `feature/systemd-integration`
 **Depends on:** pipeline-runner
-**Status:** Not Started
+**Status:** Merged
 **Requires:** both
 
 ### Goal
@@ -420,7 +420,7 @@ Morning-brief's 04:15 → 05:30 move is a `Requires: both` task because it touch
 
 **Branch:** `feature/docs-and-readme`
 **Depends on:** systemd-integration
-**Status:** Not Started
+**Status:** Merged
 **Requires:** ai
 
 ### Goal

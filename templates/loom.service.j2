@@ -1,0 +1,20 @@
+[Unit]
+Description=Loom overnight music-video renderer — {{ project_name }}
+After=network.target
+
+[Service]
+Type=oneshot
+# ollama.service is a system unit; this user service manages it via a polkit
+# grant (see docs/scheduling.md). Never `systemctl --user` — that only sees the
+# user manager, silently no-ops, and leaves Ollama holding the GPU.
+ExecStartPre=-/usr/bin/systemctl stop ollama.service
+ExecStart={{ loom_bin }} run --config {{ config_path }}
+ExecStopPost=-/usr/bin/systemctl start ollama.service
+StandardOutput=append:{{ log_path }}
+StandardError=append:{{ log_path }}
+Environment=LOOM_DEADLINE={{ deadline }}
+TimeoutStopSec=60
+KillMode=process
+
+[Install]
+WantedBy=default.target

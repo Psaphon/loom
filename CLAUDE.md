@@ -142,5 +142,5 @@ Config schema documented in `docs/config.md`. Project TOML includes:
 
 ## Audience and Tone
 
-- Target reader: the user (personal project, not portfolio-facing yet)
+- Target reader: a self-hosted operator on a single-GPU workstation
 - Tone: technical, terse, assumes familiarity with ComfyUI and `~/Projects` conventions

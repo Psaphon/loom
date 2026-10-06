@@ -1,0 +1,25 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    }
+  },
+  "2": {
+    "class_type": "CannyEdgePreprocessor",
+    "inputs": {
+      "image": ["1", 0],
+      "low_threshold": 100,
+      "high_threshold": 200,
+      "resolution": 512
+    }
+  },
+  "3": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["2", 0],
+      "filename_prefix": "loom_canny"
+    }
+  }
+}
